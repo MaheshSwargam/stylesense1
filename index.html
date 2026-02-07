@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StyleSense - AI Fashion Stylist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #4a5568;
+      --accent: #3b82f6;
+      --accent-light: #60a5fa;
+      --accent-female: #ec4899;
+      --accent-male: #3b82f6;
+      --accent-other: #8b5cf6;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+      --header-height: 70px;
+    }
+
+    .dark-mode {
+      --primary-bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent: #60a5fa;
+      --accent-light: #3b82f6;
+      --accent-female: #f472b6;
+      --accent-male: #60a5fa;
+      --accent-other: #a78bfa;
+      --border: #334155;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: var(--transition);
+      min-height: 100vh;
+    }
+
+    /* Auth Pages */
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: none;
+      border: none;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.1rem;
+    }
+
+    .auth-tab.active {
+      color: var(--accent);
+      border-bottom: 3px solid var(--accent);
+      margin-bottom: -2px;
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-logo h1 {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .auth-logo p {
+      color: var(--text-secondary);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--primary-bg);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .gender-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .gender-option {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--primary-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .gender-option:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .gender-option.active {
+      border-color: var(--accent);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .gender-option i {
+      font-size: 2rem;
+      transition: var(--transition);
+    }
+
+    .gender-male.active {
+      border-color: var(--accent-male);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .gender-male.active i {
+      color: var(--accent-male);
+    }
+
+    .gender-female.active {
+      border-color: var(--accent-female);
+      background: rgba(236, 72, 153, 0.1);
+    }
+
+    .gender-female.active i {
+      color: var(--accent-female);
+    }
+
+    .gender-other.active {
+      border-color: var(--accent-other);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .gender-other.active i {
+      color: var(--accent-other);
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Main App (After Login) */
+    .app-container {
+      display: none;
+    }
+
+    .app-container.active {
+      display: block;
+    }
+
+    /* Header */
+    header {
+      height: var(--header-height);
+      background: var(--card-bg);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .logo i {
+      font-size: 2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--primary-bg);
+      border-radius: 50px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .user-gender {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--primary-bg);
+      border: 1px solid var(--border);
+    }
+
+    .theme-toggle {
+      background: var(--primary-bg);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-top: var(--header-height);
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      opacity: 0.9;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      text-decoration: none;
+      color: var(--text-primary);
+      display: block;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+    }
+
+    .feature-link {
+      color: var(--accent);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Agent Cards */
+    .agents-section {
+      margin: 60px 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .agent-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--accent);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .agent-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .agent-card h3 {
+      margin-bottom: 5px;
+    }
+
+    .agent-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Page Styles */
+    .page {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Detail Pages */
+    .page-header {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Chips */
+    .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      padding: 10px 20px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      background: var(--primary-bg);
+      color: var(--text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .chip:hover, .chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Outfit Grid */
+    .outfit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .outfit-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .outfit-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .outfit-image {
+      height: 200px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 4rem;
+    }
+
+    .outfit-content {
+      padding: 20px;
+    }
+
+    .outfit-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .outfit-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .outfit-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Gender Badge */
+    .gender-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .gender-badge.male {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent-male);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .gender-badge.female {
+      background: rgba(236, 72, 153, 0.2);
+      color: var(--accent-female);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+
+    .gender-badge.unisex {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--accent-other);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* AI Response Box */
+    .ai-response {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      margin-top: 30px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .ai-response h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .back-button:hover {
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--card-bg);
+      padding: 40px 30px;
+      margin-top: 60px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+    }
+
+    .footer-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .footer-link:hover {
+      color: var(--accent);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0 20px;
+      }
+      
+      .main-content {
+        padding: 20px;
+      }
+      
+      .hero {
+        padding: 40px 20px;
+      }
+      
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .auth-card {
+        padding: 30px 20px;
+      }
+      
+      .gender-options {
+        flex-direction: column;
+      }
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      z-index: 1000;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease;
+      max-width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Authentication Section -->
+  <div class="auth-container" id="authContainer">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>
+          <i class="fas fa-tshirt"></i>
+          StyleSense
+        </h1>
+        <p>AI-powered fashion recommendations personalized for you</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="showAuthForm('login')">Login</button>
+        <button class="auth-tab" onclick="showAuthForm('signup')">Sign Up</button>
+      </div>
+      
+      <!-- Login Form -->
+      <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" placeholder="Enter your password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-sign-in-alt"></i>
+          Login to StyleSense
+        </button>
+        
+        <div class="auth-footer">
+          <p>New to StyleSense? <a href="#" onclick="showAuthForm('signup'); return false;">Create an account</a></p>
+        </div>
+      </form>
+      
+      <!-- Signup Form -->
+      <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" placeholder="Create a password" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Select Your Gender</label>
+          <div class="gender-options">
+            <div class="gender-option gender-male" onclick="selectGender('male')">
+              <i class="fas fa-male"></i>
+              <span>Male</span>
+            </div>
+            <div class="gender-option gender-female" onclick="selectGender('female')">
+              <i class="fas fa-female"></i>
+              <span>Female</span>
+            </div>
+            <div class="gender-option gender-other" onclick="selectGender('other')">
+              <i class="fas fa-user"></i>
+              <span>Other</span>
+            </div>
+          </div>
+          <input type="hidden" id="selectedGender" value="">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Style Preferences (Optional)</label>
+          <div class="chips-container">
+            <span class="chip">Casual</span>
+            <span class="chip">Formal</span>
+            <span class="chip">Traditional</span>
+            <span class="chip">Modern</span>
+            <span class="chip">Minimalist</span>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-user-plus"></i>
+          Create Account
+        </button>
+        
+        <div class="auth-footer">
+          <p>Already have an account? <a href="#" onclick="showAuthForm('login'); return false;">Login here</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Main Application (Hidden until login) -->
+  <div class="app-container" id="appContainer">
+    <!-- Header -->
+    <header>
+      <a href="#home" class="logo" onclick="navigate('home')">
+        <i class="fas fa-tshirt"></i>
+        <span>StyleSense</span>
+      </a>
+      
+      <nav class="nav-links">
+        <a href="#home" class="nav-link active" onclick="navigate('home')">Home</a>
+        <a href="#generate" class="nav-link" onclick="navigate('generate')">Generate</a>
+        <a href="#wardrobe" class="nav-link" onclick="navigate('wardrobe')">Wardrobe</a>
+        <a href="#cultural" class="nav-link" onclick="navigate('cultural')">Cultural</a>
+        <a href="#evaluate" class="nav-link" onclick="navigate('evaluate')">Evaluate</a>
+        <a href="#saved" class="nav-link" onclick="navigate('saved')">Saved</a>
+      </nav>
+      
+      <div class="header-controls">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div>
+            <div id="userName">User</div>
+            <div class="user-gender" id="userGender">Male</div>
+          </div>
+        </div>
+        
+        <button class="theme-toggle" id="themeToggle">
+          <i class="fas fa-moon"></i>
+          <span>Dark Mode</span>
+        </button>
+        
+        <button class="btn btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+          <div class="hero">
+            <h1>Welcome to StyleSense, <span id="userGreeting">User</span>!</h1>
+            <p>Your personal AI fashion stylist is ready to create outfits perfect for <span id="userGenderGreeting">your style</span>.</p>
+            <a href="#generate" class="btn btn-primary" onclick="navigate('generate')">
+              <i class="fas fa-magic"></i>
+              Generate Your First Outfit
+            </a>
+          </div>
+          
+          <div class="features-grid">
+            <a href="#generate" class="feature-card" onclick="navigate('generate')">
+              <div class="feature-icon">
+                <i class="fas fa-robot"></i>
+              </div>
+              <h3>AI Outfit Generation</h3>
+              <p>Get personalized outfit recommendations tailored for <span id="genderText1">your gender</span> using our multi-agent AI system.</p>
+              <span class="feature-link">
+                Try it now <i class="fas fa-arrow-right"></i>
+              </span>
+            </a>
+            
+            <a href="#wardrobe" class="feature-card" onclick="navigate('wardrobe')">
+              <div class="feature-icon">
+                <i class="fas fa-archive"></i>
+              </div>
+              <h3>Smart Wardrobe</h3>
+              <p>Upload your <span id="genderText2">clothes</span> and let AI analyze them. Get recommendations based on what you already own.</p>
+              <span class="feature-link">
+                Manage wardrobe <i class="fas fa-arrow-right"></i>
+              </span>
+            </a>
+            
+            <a href="#cultural" class="feature-card" onclick="navigate('cultural')">
+              <div class="feature-icon">
+                <i class="fas fa-globe-asia"></i>
+              </div>
+              <h3>Cultural Intelligence</h3>
+              <p>Region-specific styling with AI that understands cultural appropriateness for <span id="genderText3">your gender</span>.</p>
+              <span class="feature-link">
+                Explore cultures <i class="fas fa-arrow-right"></i>
+              </span>
+            </a>
+          </div>
+          
+          <div class="agents-section">
+            <h2 class="section-title">AI Agentic Architecture</h2>
+            <div class="agent-grid">
+              <div class="agent-card">
+                <div class="agent-header">
+                  <div class="agent-icon">
+                    <i class="fas fa-eye"></i>
+                  </div>
+                  <div>
+                    <h3>Wardrobe Vision Agent</h3>
+                    <p>Analyzes uploaded clothing images</p>
+                  </div>
+                </div>
+                <p>Uses vision-language models to identify clothing type, color, fabric, and style from your wardrobe photos.</p>
+              </div>
+              
+              <div class="agent-card">
+                <div class="agent-header">
+                  <div class="agent-icon">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div>
+                    <h3>User Context Agent</h3>
+                    <p>Understands your preferences</p>
+                  </div>
+                </div>
+                <p>Extracts and structures user constraints including age, gender, occasion, style preferences, and climate conditions.</p>
+              </div>
+              
+              <div class="agent-card">
+                <div class="agent-header">
+                  <div class="agent-icon">
+                    <i class="fas fa-monument"></i>
+                  </div>
+                  <div>
+                    <h3>Cultural Intelligence Agent</h3>
+                    <p>Ensures cultural appropriateness</p>
+                  </div>
+                </div>
+                <p>Injects region-specific fashion logic, color symbolism, and cultural appropriateness into recommendations.</p>
+              </div>
+              
+              <div class="agent-card">
+                <div class="agent-header">
+                  <div class="agent-icon">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                  <div>
+                    <h3>Outfit Generator Agent</h3>
+                    <p>Creates complete outfits</p>
+                  </div>
+                </div>
+                <p>Generates cohesive outfits with accessories and provides detailed reasoning for each recommendation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate Outfit Page -->
+        <div id="generate" class="page">
+          <a href="#home" class="back-button" onclick="navigate('home')">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          
+          <div class="page-header">
+            <h1>AI Outfit Generator</h1>
+            <p>Describe your occasion and preferences. Our AI agents will create the perfect <span id="generateGenderText">outfit</span> for you.</p>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Describe your occasion or vibe</label>
+            <input type="text" class="form-control" id="occasionInput" placeholder="e.g., Casual brunch with friends, Diwali celebration, Business meeting">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Select Style</label>
+            <div class="chips-container">
+              <span class="chip active">Casual</span>
+              <span class="chip">Formal</span>
+              <span class="chip">Ethnic</span>
+              <span class="chip">Fusion</span>
+              <span class="chip">Party</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Color Preference</label>
+            <div class="chips-container">
+              <span class="chip active">Neutral</span>
+              <span class="chip">Bright</span>
+              <span class="chip">Pastel</span>
+              <span class="chip">Earth Tones</span>
+              <span class="chip">Jewel Tones</span>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" id="generateBtn" onclick="generateOutfit()">
+            <i class="fas fa-robot"></i>
+            Generate Outfit for <span id="generateGenderBtn"></span>
+          </button>
+          
+          <div class="loading" id="generateLoading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <h3>AI Agents at Work</h3>
+            <p>Creating personalized outfit recommendations for <span id="loadingGenderText">you</span>...</p>
+            <div class="agent-status">
+              <p>🔍 Wardrobe Vision Agent → 👤 User Context Agent → 🌍 Cultural Intelligence Agent → 👗 Outfit Generator Agent</p>
+            </div>
+          </div>
+          
+          <div id="outfitResult" style="display: none;">
+            <!-- Male outfits will be populated here -->
+            <div id="maleOutfits"></div>
+            <!-- Female outfits will be populated here -->
+            <div id="femaleOutfits"></div>
+            <!-- Unisex outfits will be populated here -->
+            <div id="unisexOutfits"></div>
+          </div>
+        </div>
+
+        <!-- Wardrobe Page -->
+        <div id="wardrobe" class="page">
+          <a href="#home" class="back-button" onclick="navigate('home')">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          
+          <div class="page-header">
+            <h1>Smart Wardrobe</h1>
+            <p>Upload images of your <span id="wardrobeGenderText">clothes</span>. AI will analyze them and suggest outfits using items you already own.</p>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 30px;">
+            <button class="btn btn-primary" onclick="uploadClothing()" style="padding: 15px 30px;">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Upload Clothing Item
+            </button>
+          </div>
+          
+          <div class="outfit-grid" id="wardrobeItems">
+            <!-- Wardrobe items will be dynamically populated based on gender -->
+          </div>
+          
+          <div class="ai-response">
+            <h3><i class="fas fa-chart-bar"></i> Wardrobe Analysis</h3>
+            <p><strong>AI Wardrobe Vision Agent Report for <span id="wardrobeUserGender">your gender</span>:</strong></p>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              <li>Total items: <span id="wardrobeTotalItems">0</span></li>
+              <li>Style distribution: <span id="wardrobeStyleDistribution">Loading...</span></li>
+              <li>Color analysis: <span id="wardrobeColorAnalysis">Loading...</span></li>
+              <li>Gap detected: <span id="wardrobeGap">Loading...</span></li>
+              <li>Recommendation: <span id="wardrobeRecommendation">Loading...</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Cultural Styles Page -->
+        <div id="cultural" class="page">
+          <a href="#home" class="back-button" onclick="navigate('home')">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          
+          <div class="page-header">
+            <h1>Cultural Intelligence</h1>
+            <p>Explore traditional and fusion styles from different Indian regions with AI-powered cultural appropriateness checks for <span id="culturalGenderText">your gender</span>.</p>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Select Region</label>
+            <div class="chips-container">
+              <span class="chip active">North India</span>
+              <span class="chip">South India</span>
+              <span class="chip">West India</span>
+              <span class="chip">East India</span>
+              <span class="chip">Northeast</span>
+              <span class="chip">Fusion</span>
+            </div>
+          </div>
+          
+          <div class="outfit-grid" id="culturalOutfits">
+            <!-- Cultural outfits will be dynamically populated based on gender -->
+          </div>
+          
+          <div class="ai-response">
+            <h3><i class="fas fa-monument"></i> Cultural Intelligence Agent Notes</h3>
+            <p>The Cultural Intelligence Agent ensures outfits respect regional traditions while maintaining modern wearability for <span id="culturalAgentGender">your gender</span>:</p>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              <li><strong>Color symbolism:</strong> Different colors have different meanings across regions (e.g., red for weddings in North, white for rituals in South)</li>
+              <li><strong>Fabric appropriateness:</strong> Recommends breathable fabrics for coastal regions, warmer fabrics for northern winters</li>
+              <li><strong>Modesty norms:</strong> Adjusts sleeve length, neckline, and outfit coverage based on regional cultural expectations</li>
+              <li><strong>Accessory pairing:</strong> Suggests culturally appropriate jewelry, footwear, and hair accessories</li>
+              <li><strong>Occasion matching:</strong> Ensures outfits match the formality and nature of regional festivals and events</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Evaluate Outfit Page -->
+        <div id="evaluate" class="page">
+          <a href="#home" class="back-button" onclick="navigate('home')">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          
+          <div class="page-header">
+            <h1>Outfit Evaluator</h1>
+            <p>Upload or describe your outfit. AI will analyze it and provide detailed feedback with improvement suggestions for <span id="evaluateGenderText">your gender</span>.</p>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Describe your outfit</label>
+            <textarea class="form-control" id="outfitDescription" rows="4" placeholder="Describe what you're wearing or planning to wear..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Occasion</label>
+            <div class="chips-container">
+              <span class="chip active">Casual</span>
+              <span class="chip">Formal</span>
+              <span class="chip">Wedding</span>
+              <span class="chip">Festival</span>
+              <span class="chip">Office</span>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" id="evaluateBtn" onclick="evaluateOutfit()">
+            <i class="fas fa-star"></i>
+            Evaluate Outfit with AI
+          </button>
+          
+          <div class="loading" id="evaluateLoading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <h3>AI Evaluation in Progress</h3>
+            <p>Our Critic & Evaluator Agent is analyzing your outfit...</p>
+          </div>
+          
+          <div id="evaluationResult" style="display: none; margin-top: 30px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="display: inline-block; position: relative;">
+                <div style="width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--accent) 0% 78%, var(--border) 78% 100%); display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <span style="font-size: 2.5rem; font-weight: 700; color: var(--accent);">7.8</span>
+                    <span style="color: var(--text-secondary);">/10</span>
+                  </div>
+                </div>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                  <span style="font-weight: 600; margin-top: 160px;">Style Score</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="outfit-grid">
+              <div class="outfit-card">
+                <div class="outfit-content">
+                  <h3 style="display: flex; align-items: center; gap: 10px; color: var(--success);">
+                    <i class="fas fa-check-circle"></i> Strengths
+                  </h3>
+                  <ul style="margin-top: 15px; padding-left: 20px;">
+                    <li>Excellent color harmony between top and bottom</li>
+                    <li>Appropriate fabric choice for the occasion</li>
+                    <li>Good balance of traditional and modern elements</li>
+                    <li>Accessories complement the overall look well</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="outfit-card">
+                <div class="outfit-content">
+                  <h3 style="display: flex; align-items: center; gap: 10px; color: var(--warning);">
+                    <i class="fas fa-exclamation-triangle"></i> Areas for Improvement
+                  </h3>
+                  <ul style="margin-top: 15px; padding-left: 20px;">
+                    <li>Consider adding a contrasting element for visual interest</li>
+                    <li>Footwear could better match the formality level</li>
+                    <li>The necklace length may not be ideal for your neckline</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="outfit-card">
+                <div class="outfit-content">
+                  <h3 style="display: flex; align-items: center; gap: 10px; color: var(--accent);">
+                    <i class="fas fa-lightbulb"></i> AI Suggestions
+                  </h3>
+                  <ul style="margin-top: 15px; padding-left: 20px;">
+                    <li>Add a statement belt to define your waist</li>
+                    <li>Swap closed heels for strappy sandals</li>
+                    <li>Consider a different hairstyle to complement the neckline</li>
+                    <li>Add a lightweight jacket for layering options</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ai-response">
+              <h3><i class="fas fa-graduation-cap"></i> Educational Insight</h3>
+              <p>Based on your outfit evaluation, here's what you can learn about fashion principles:</p>
+              <ul style="margin-top: 10px; padding-left: 20px;">
+                <li><strong>Rule of Thirds:</strong> Your outfit creates good vertical proportion, but could benefit from more defined waist emphasis</li>
+                <li><strong>Color Theory:</strong> The analogous color scheme works well, consider adding one complementary accent color</li>
+                <li><strong>Texture Mixing:</strong> You have smooth fabrics, adding one textured element (like lace or embroidery) would add depth</li>
+                <li><strong>Cultural Appropriateness:</strong> The outfit respects cultural norms for the chosen occasion</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved Outfits Page -->
+        <div id="saved" class="page">
+          <a href="#home" class="back-button" onclick="navigate('home')">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          
+          <div class="page-header">
+            <h1>Saved Outfits & Collections</h1>
+            <p>Your favorite AI-generated outfits for <span id="savedGenderText">your gender</span>, organized into collections for different occasions.</p>
+          </div>
+          
+          <div class="chips-container" style="margin-bottom: 30px;">
+            <span class="chip active">All Outfits</span>
+            <span class="chip">Festive Collection</span>
+            <span class="chip">Office Wear</span>
+            <span class="chip">Casual Days</span>
+            <span class="chip">Travel Looks</span>
+            <span class="chip">Wedding Guest</span>
+          </div>
+          
+          <div class="outfit-grid" id="savedOutfits">
+            <!-- Saved outfits will be dynamically populated -->
+          </div>
+          
+          <div class="ai-response">
+            <h3><i class="fas fa-chart-line"></i> Your Style Evolution</h3>
+            <p>Based on your saved outfits, AI has identified your fashion preferences and evolution:</p>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              <li><strong>Style preference:</strong> <span id="savedStylePreference">Loading...</span></li>
+              <li><strong>Color palette:</strong> <span id="savedColorPalette">Loading...</span></li>
+              <li><strong>Comfort priority:</strong> <span id="savedComfortPriority">Loading...</span></li>
+              <li><strong>Trend adoption:</strong> <span id="savedTrendAdoption">Loading...</span></li>
+              <li><strong>Seasonal adaptation:</strong> <span id="savedSeasonalAdaptation">Loading...</span></li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Next recommended addition:</strong> <span id="savedRecommendation">Loading...</span></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+        <i class="fas fa-tshirt"></i>
+        <span>StyleSense</span>
+      </div>
+      <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 20px;">
+        Agentic, multimodal AI fashion recommendation system that understands culture, context, and personal wardrobe.
+      </p>
+      <div class="footer-links">
+        <a href="#home" class="footer-link" onclick="navigate('home')">Home</a>
+        <a href="#generate" class="footer-link" onclick="navigate('generate')">Generate</a>
+        <a href="#wardrobe" class="footer-link" onclick="navigate('wardrobe')">Wardrobe</a>
+        <a href="#cultural" class="footer-link" onclick="navigate('cultural')">Cultural</a>
+        <a href="#evaluate" class="footer-link" onclick="navigate('evaluate')">Evaluate</a>
+        <a href="#saved" class="footer-link" onclick="navigate('saved')">Saved</a>
+      </div>
+      <p style="color: var(--text-secondary); margin-top: 30px; font-size: 0.9rem;">
+        © 2023 StyleSense AI. All rights reserved.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // User data and state management
+    let currentUser = null;
+    let selectedGender = '';
+    
+    // Outfits database (simulated)
+    const outfitsDatabase = {
+      male: [
+        {
+          id: 1,
+          title: "Casual Office Wear",
+          description: "Tailored shirt with chinos and loafers",
+          style: "Casual Formal",
+          color: "Neutral",
+          occasion: "Office",
+          icon: "fa-user-tie",
+          color1: "#3b82f6",
+          color2: "#60a5fa"
+        },
+        {
+          id: 2,
+          title: "Traditional Kurta Set",
+          description: "Embroidered kurta with pyjama and mojris",
+          style: "Traditional",
+          color: "Earth Tones",
+          occasion: "Festival",
+          icon: "fa-tshirt",
+          color1: "#8b4513",
+          color2: "#a0522d"
+        },
+        {
+          id: 3,
+          title: "Weekend Casual",
+          description: "Denim jacket with t-shirt and jeans",
+          style: "Casual",
+          color: "Denim",
+          occasion: "Casual",
+          icon: "fa-vest",
+          color1: "#1e40af",
+          color2: "#3b82f6"
+        }
+      ],
+      female: [
+        {
+          id: 4,
+          title: "Elegant Saree",
+          description: "Silk saree with statement blouse",
+          style: "Traditional",
+          color: "Jewel Tones",
+          occasion: "Wedding",
+          icon: "fa-female",
+          color1: "#ec4899",
+          color2: "#f472b6"
+        },
+        {
+          id: 5,
+          title: "Business Formal",
+          description: "Blazer with trousers and heels",
+          style: "Formal",
+          color: "Neutral",
+          occasion: "Office",
+          icon: "fa-suitcase",
+          color1: "#6b7280",
+          color2: "#9ca3af"
+        },
+        {
+          id: 6,
+          title: "Casual Fusion",
+          description: "Kurta with jeans and jhumkas",
+          style: "Fusion",
+          color: "Pastel",
+          occasion: "Casual",
+          icon: "fa-tshirt",
+          color1: "#a78bfa",
+          color2: "#c4b5fd"
+        }
+      ],
+      unisex: [
+        {
+          id: 7,
+          title: "Smart Casual",
+          description: "Button-down shirt with tailored pants",
+          style: "Smart Casual",
+          color: "Neutral",
+          occasion: "Casual",
+          icon: "fa-user",
+          color1: "#10b981",
+          color2: "#34d399"
+        },
+        {
+          id: 8,
+          title: "Ethnic Fusion",
+          description: "Contemporary kurta with modern accessories",
+          style: "Fusion",
+          color: "Bright",
+          occasion: "Festival",
+          icon: "fa-hands",
+          color1: "#f59e0b",
+          color2: "#fbbf24"
+        }
+      ]
+    };
+
+    // Wardrobe items database
+    const wardrobeDatabase = {
+      male: [
+        { name: "Blue Denim Jeans", type: "Casual", color: "Denim", icon: "fa-tshirt" },
+        { name: "White Formal Shirt", type: "Formal", color: "White", icon: "fa-vest" },
+        { name: "Kurta Set", type: "Traditional", color: "Beige", icon: "fa-tshirt" },
+        { name: "Leather Jacket", type: "Casual", color: "Black", icon: "fa-vest" },
+        { name: "Chinos", type: "Casual", color: "Khaki", icon: "fa-tshirt" },
+        { name: "Loafers", type: "Footwear", color: "Brown", icon: "fa-shoe-prints" }
+      ],
+      female: [
+        { name: "Silk Saree", type: "Traditional", color: "Red", icon: "fa-female" },
+        { name: "White Blouse", type: "Formal", color: "White", icon: "fa-vest" },
+        { name: "Palazzo Pants", type: "Casual", color: "Navy", icon: "fa-tshirt" },
+        { name: "Kurta", type: "Traditional", color: "Blue", icon: "fa-tshirt" },
+        { name: "Statement Necklace", type: "Accessory", color: "Gold", icon: "fa-gem" },
+        { name: "Heels", type: "Footwear", color: "Black", icon: "fa-shoe-prints" }
+      ],
+      other: [
+        { name: "Neutral Kurta", type: "Fusion", color: "Beige", icon: "fa-tshirt" },
+        { name: "Tailored Pants", type: "Formal", color: "Grey", icon: "fa-tshirt" },
+        { name: "Denim Jacket", type: "Casual", color: "Blue", icon: "fa-vest" },
+        { name: "Minimalist Watch", type: "Accessory", color: "Silver", icon: "fa-clock" },
+        { name: "Sneakers", type: "Footwear", color: "White", icon: "fa-shoe-prints" }
+      ]
+    };
+
+    // Cultural outfits database
+    const culturalOutfitsDatabase = {
+      male: [
+        {
+          title: "Punjabi Kurta Pyjama",
+          region: "North India",
+          style: "Traditional",
+          description: "Phulkari embroidered kurta with matching pyjama",
+          icon: "fa-peace",
+          color1: "#f59e0b",
+          color2: "#fbbf24"
+        },
+        {
+          title: "South Indian Veshti",
+          region: "South India",
+          style: "Traditional",
+          description: "White veshti with angavastram",
+          icon: "fa-umbrella-beach",
+          color1: "#10b981",
+          color2: "#34d399"
+        },
+        {
+          title: "Modern Indo-Western",
+          region: "Fusion",
+          style: "Fusion",
+          description: "Kurta with jeans and contemporary accessories",
+          icon: "fa-hands",
+          color1: "#8b5cf6",
+          color2: "#a78bfa"
+        }
+      ],
+      female: [
+        {
+          title: "Punjabi Phulkari Suit",
+          region: "North India",
+          style: "Traditional",
+          description: "Bright phulkari suit with paranda",
+          icon: "fa-peace",
+          color1: "#ec4899",
+          color2: "#f472b6"
+        },
+        {
+          title: "Kerala Kasavu Saree",
+          region: "South India",
+          style: "Traditional",
+          description: "Off-white kasavu saree with gold border",
+          icon: "fa-umbrella-beach",
+          color1: "#fbbf24",
+          color2: "#fde68a"
+        },
+        {
+          title: "Contemporary Saree",
+          region: "Fusion",
+          style: "Fusion",
+          description: "Modern drape saree with statement blouse",
+          icon: "fa-hands",
+          color1: "#8b5cf6",
+          color2: "#a78bfa"
+        }
+      ],
+      other: [
+        {
+          title: "Androgynous Kurta",
+          region: "Fusion",
+          style: "Fusion",
+          description: "Minimalist kurta with straight cut pants",
+          icon: "fa-user",
+          color1: "#6b7280",
+          color2: "#9ca3af"
+        },
+        {
+          title: "Contemporary Sherwani",
+          region: "North India",
+          style: "Traditional",
+          description: "Modern take on traditional sherwani",
+          icon: "fa-tshirt",
+          color1: "#1e40af",
+          color2: "#3b82f6"
+        },
+        {
+          title: "Fusion Jacket",
+          region: "Fusion",
+          style: "Fusion",
+          description: "Embroidered jacket with western pants",
+          icon: "fa-vest",
+          color1: "#8b5cf6",
+          color2: "#a78bfa"
+        }
+      ]
+    };
+
+    // Saved outfits database
+    const savedOutfitsDatabase = {
+      male: [
+        { title: "Diwali Celebration", saved: "2 days ago", style: "Festive", icon: "fa-heart" },
+        { title: "Business Formal", saved: "1 week ago", style: "Office", icon: "fa-briefcase" },
+        { title: "Weekend Casual", saved: "3 days ago", style: "Casual", icon: "fa-umbrella-beach" }
+      ],
+      female: [
+        { title: "Wedding Guest", saved: "1 day ago", style: "Festive", icon: "fa-heart" },
+        { title: "Office Presentation", saved: "5 days ago", style: "Office", icon: "fa-briefcase" },
+        { title: "Brunch Outing", saved: "2 days ago", style: "Casual", icon: "fa-umbrella-beach" }
+      ],
+      other: [
+        { title: "Festival Look", saved: "4 days ago", style: "Festive", icon: "fa-heart" },
+        { title: "Client Meeting", saved: "6 days ago", style: "Office", icon: "fa-briefcase" },
+        { title: "Coffee Date", saved: "1 day ago", style: "Casual", icon: "fa-umbrella-beach" }
+      ]
+    };
+
+    /* ---------------- AUTHENTICATION FUNCTIONS ---------------- */
+    function showAuthForm(formType) {
+      // Update active tab
+      document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+      
+      if (formType === 'login') {
+        document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+      } else {
+        document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+        document.getElementById('signupForm').classList.add('active');
+      }
+    }
+
+    function selectGender(gender) {
+      selectedGender = gender;
+      
+      // Update UI
+      document.querySelectorAll('.gender-option').forEach(option => option.classList.remove('active'));
+      document.querySelectorAll('.gender-' + gender).forEach(option => option.classList.add('active'));
+      
+      // Update hidden input
+      document.getElementById('selectedGender').value = gender;
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      // In a real app, you would validate credentials with a backend
+      const email = document.querySelector('#loginForm input[type="email"]').value;
+      const password = document.querySelector('#loginForm input[type="password"]').value;
+      
+      // Check if user exists in localStorage
+      const users = JSON.parse(localStorage.getItem('stylesense_users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+      
+      if (user) {
+        currentUser = user;
+        localStorage.setItem('stylesense_current_user', JSON.stringify(user));
+        showNotification('Welcome back, ' + user.name + '!');
+        showApp();
+      } else {
+        showNotification('Invalid credentials. Please try again or sign up.', 'error');
+      }
+    }
+
+    function handleSignup(event) {
+      event.preventDefault();
+      
+      const name = document.querySelector('#signupForm input[type="text"]').value;
+      const email = document.querySelector('#signupForm input[type="email"]').value;
+      const password = document.querySelector('#signupForm input[type="password"]').value;
+      const gender = selectedGender || 'other';
+      
+      if (!gender) {
+        showNotification('Please select your gender', 'error');
+        return;
+      }
+      
+      // Save user to localStorage
+      const users = JSON.parse(localStorage.getItem('stylesense_users') || '[]');
+      
+      // Check if user already exists
+      if (users.some(u => u.email === email)) {
+        showNotification('User already exists. Please login instead.', 'error');
+        return;
+      }
+      
+      const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        gender: gender,
+        joined: new Date().toISOString(),
+        preferences: []
+      };
+      
+      users.push(newUser);
+      localStorage.setItem('stylesense_users', JSON.stringify(users));
+      localStorage.setItem('stylesense_current_user', JSON.stringify(newUser));
+      
+      currentUser = newUser;
+      showNotification('Welcome to StyleSense, ' + name + '!');
+      showApp();
+    }
+
+    function showApp() {
+      // Hide auth container, show app container
+      document.getElementById('authContainer').style.display = 'none';
+      document.getElementById('appContainer').classList.add('active');
+      
+      // Update user info in the app
+      updateUserInterface();
+      
+      // Load gender-specific content
+      loadGenderSpecificContent();
+      
+      // Navigate to home
+      navigate('home');
+    }
+
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      // Update user info in header
+      document.getElementById('userName').textContent = currentUser.name;
+      document.getElementById('userGender').textContent = 
+        currentUser.gender.charAt(0).toUpperCase() + currentUser.gender.slice(1);
+      
+      // Update user avatar
+      const avatar = document.getElementById('userAvatar');
+      avatar.textContent = currentUser.name.charAt(0).toUpperCase();
+      
+      // Set avatar color based on gender
+      if (currentUser.gender === 'male') {
+        avatar.style.backgroundColor = 'var(--accent-male)';
+      } else if (currentUser.gender === 'female') {
+        avatar.style.backgroundColor = 'var(--accent-female)';
+      } else {
+        avatar.style.backgroundColor = 'var(--accent-other)';
+      }
+      
+      // Update greetings
+      document.getElementById('userGreeting').textContent = currentUser.name;
+      document.getElementById('userGenderGreeting').textContent = 
+        currentUser.gender === 'male' ? 'men' : 
+        currentUser.gender === 'female' ? 'women' : 'your style';
+    }
+
+    function loadGenderSpecificContent() {
+      if (!currentUser) return;
+      
+      const gender = currentUser.gender;
+      const genderText = gender === 'male' ? 'men' : gender === 'female' ? 'women' : 'all genders';
+      const genderPossessive = gender === 'male' ? "men's" : gender === 'female' ? "women's" : 'your';
+      
+      // Update text across the app
+      document.querySelectorAll('#genderText1, #genderText2, #genderText3').forEach(el => {
+        el.textContent = genderPossessive;
+      });
+      
+      document.getElementById('generateGenderText').textContent = genderPossessive;
+      document.getElementById('generateGenderBtn').textContent = 
+        gender === 'male' ? 'Men' : gender === 'female' ? 'Women' : 'You';
+      document.getElementById('loadingGenderText').textContent = 
+        gender === 'male' ? 'men' : gender === 'female' ? 'women' : 'you';
+      document.getElementById('wardrobeGenderText').textContent = genderPossessive;
+      document.getElementById('wardrobeUserGender').textContent = genderText;
+      document.getElementById('culturalGenderText').textContent = genderText;
+      document.getElementById('culturalAgentGender').textContent = genderText;
+      document.getElementById('evaluateGenderText').textContent = genderText;
+      document.getElementById('savedGenderText').textContent = genderText;
+      
+      // Load gender-specific outfits
+      loadOutfitsForGender();
+      loadWardrobeForGender();
+      loadCulturalOutfitsForGender();
+      loadSavedOutfitsForGender();
+    }
+
+    function loadOutfitsForGender() {
+      if (!currentUser) return;
+      
+      const gender = currentUser.gender;
+      const container = document.getElementById('outfitResult');
+      container.innerHTML = '';
+      
+      // Show outfits for the user's gender
+      const userOutfits = outfitsDatabase[gender] || [];
+      const unisexOutfits = outfitsDatabase.unisex || [];
+      
+      // Combine gender-specific and unisex outfits
+      const allOutfits = [...userOutfits, ...unisexOutfits];
+      
+      allOutfits.forEach(outfit => {
+        const outfitElement = createOutfitCard(outfit, gender);
+        container.appendChild(outfitElement);
+      });
+    }
+
+    function createOutfitCard(outfit, gender) {
+      const div = document.createElement('div');
+      div.className = 'outfit-card';
+      div.style.margin = '30px 0';
+      
+      const genderBadge = gender === 'male' ? 'male' : 
+                         gender === 'female' ? 'female' : 'unisex';
+      
+      div.innerHTML = `
+        <div class="outfit-image" style="background: linear-gradient(135deg, ${outfit.color1} 0%, ${outfit.color2} 100%);">
+          <i class="fas ${outfit.icon}"></i>
+        </div>
+        <div class="outfit-content">
+          <h2 class="outfit-title">${outfit.title} 
+            <span class="gender-badge ${genderBadge}">${genderBadge.charAt(0).toUpperCase() + genderBadge.slice(1)}</span>
+          </h2>
+          <div class="outfit-meta">
+            <span><i class="fas fa-tag"></i> ${outfit.style}</span>
+            <span><i class="fas fa-palette"></i> ${outfit.color}</span>
+            <span><i class="fas fa-calendar"></i> ${outfit.occasion}</span>
+          </div>
+          <p>${outfit.description}. Perfect for ${outfit.occasion.toLowerCase()} occasions.</p>
+          
+          <div class="outfit-items" style="margin: 20px 0; padding: 20px; background: var(--primary-bg); border-radius: var(--radius);">
+            <h4 style="margin-bottom: 15px;">Outfit Components:</h4>
+            <ul style="list-style: none;">
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong>Top:</strong> ${outfit.title.split(' ')[0]} piece</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong>Bottom:</strong> Coordinating bottoms</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong>Footwear:</strong> Matching shoes</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong>Accessories:</strong> Minimal accessories</li>
+              <li style="padding: 8px 0;"><strong>Overall:</strong> Perfect for ${currentUser.gender === 'male' ? 'men' : currentUser.gender === 'female' ? 'women' : 'all genders'}</li>
+            </ul>
+          </div>
+          
+          <div class="ai-response">
+            <h3><i class="fas fa-brain"></i> AI Reasoning for ${currentUser.gender === 'male' ? 'Men' : currentUser.gender === 'female' ? 'Women' : 'All Genders'}</h3>
+            <p>This outfit was generated considering:</p>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              <li><strong>Fit:</strong> Tailored for ${currentUser.gender === 'male' ? 'male' : currentUser.gender === 'female' ? 'female' : 'your'} body type</li>
+              <li><strong>Style:</strong> Appropriate for ${currentUser.gender} fashion preferences</li>
+              <li><strong>Comfort:</strong> Designed for ${currentUser.gender === 'male' ? 'men' : currentUser.gender === 'female' ? 'women' : 'all-day'} comfort</li>
+              <li><strong>Cultural appropriateness:</strong> Suitable for ${currentUser.gender} cultural norms</li>
+            </ul>
+          </div>
+          
+          <div class="outfit-actions">
+            <button class="btn btn-primary" onclick="saveOutfit()">
+              <i class="fas fa-heart"></i> Save Outfit
+            </button>
+            <button class="btn btn-outline" onclick="regenerateOutfit()">
+              <i class="fas fa-redo"></i> Regenerate
+            </button>
+            <button class="btn btn-outline" onclick="shareOutfit()">
+              <i class="fas fa-share"></i> Share
+            </button>
+          </div>
+        </div>
+      `;
+      
+      return div;
+    }
+
+    function loadWardrobeForGender() {
+      if (!currentUser) return;
+      
+      const gender = currentUser.gender;
+      const container = document.getElementById('wardrobeItems');
+      container.innerHTML = '';
+      
+      const wardrobeItems = wardrobeDatabase[gender] || wardrobeDatabase.other;
+      
+      wardrobeItems.forEach((item, index) => {
+        const colorMap = {
+          'Denim': '#3b82f6',
+          'White': '#f3f4f6',
+          'Beige': '#d6d3d1',
+          'Black': '#1f2937',
+          'Khaki': '#92400e',
+          'Brown': '#92400e',
+          'Red': '#dc2626',
+          'Navy': '#1e40af',
+          'Blue': '#3b82f6',
+          'Gold': '#f59e0b',
+          'Grey': '#6b7280',
+          'Silver': '#9ca3af'
+        };
+        
+        const color1 = colorMap[item.color] || '#3b82f6';
+        const color2 = colorMap[item.color] ? adjustColor(colorMap[item.color], 20) : '#60a5fa';
+        
+        const div = document.createElement('div');
+        div.className = 'outfit-card';
+        div.innerHTML = `
+          <div class="outfit-image" style="background: linear-gradient(135deg, ${color1} 0%, ${color2} 100%);">
+            <i class="fas ${item.icon}"></i>
+          </div>
+          <div class="outfit-content">
+            <h3 class="outfit-title">${item.name}</h3>
+            <div class="outfit-meta">
+              <span><i class="fas fa-tag"></i> ${item.type}</span>
+              <span><i class="fas fa-palette"></i> ${item.color}</span>
+              <span class="gender-badge ${gender}">${gender.charAt(0).toUpperCase() + gender.slice(1)}</span>
+            </div>
+            <p>Perfect for ${currentUser.gender === 'male' ? 'men' : currentUser.gender === 'female' ? 'women' : 'all'} ${item.type.toLowerCase()} wear.</p>
+            <div class="outfit-actions">
+              <button class="btn btn-outline" onclick="viewItemDetails('${item.name}')">
+                <i class="fas fa-eye"></i> Details
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Update wardrobe analysis
+      updateWardrobeAnalysis(gender);
+    }
+
+    function updateWardrobeAnalysis(gender) {
+      const wardrobeItems = wardrobeDatabase[gender] || wardrobeDatabase.other;
+      
+      document.getElementById('wardrobeTotalItems').textContent = wardrobeItems.length;
+      
+      // Calculate style distribution
+      const styleCount = {};
+      wardrobeItems.forEach(item => {
+        styleCount[item.type] = (styleCount[item.type] || 0) + 1;
+      });
+      
+      const styleDistribution = Object.entries(styleCount)
+        .map(([type, count]) => `${Math.round((count / wardrobeItems.length) * 100)}% ${type}`)
+        .join(', ');
+      
+      document.getElementById('wardrobeStyleDistribution').textContent = styleDistribution;
+      
+      // Color analysis
+      const colors = wardrobeItems.map(item => item.color);
+      const uniqueColors = [...new Set(colors)];
+      document.getElementById('wardrobeColorAnalysis').textContent = 
+        `${uniqueColors.length} distinct colors, mostly ${uniqueColors.slice(0, 2).join(' and ')}`;
+      
+      // Gap analysis
+      const gaps = {
+        male: "Limited formal ethnic wear for business-casual occasions",
+        female: "Need more casual fusion wear for everyday outings",
+        other: "Consider adding more statement pieces for special occasions"
+      };
+      
+      document.getElementById('wardrobeGap').textContent = gaps[gender] || gaps.other;
+      
+      // Recommendation
+      const recommendations = {
+        male: "Add 1-2 tailored blazers and a pair of formal shoes to increase outfit combinations by 40%",
+        female: "Consider adding a statement jacket and versatile heels to mix-and-match with existing items",
+        other: "Add a versatile neutral-colored jacket and minimalist accessories for more styling options"
+      };
+      
+      document.getElementById('wardrobeRecommendation').textContent = recommendations[gender] || recommendations.other;
+    }
+
+    function loadCulturalOutfitsForGender() {
+      if (!currentUser) return;
+      
+      const gender = currentUser.gender;
+      const container = document.getElementById('culturalOutfits');
+      container.innerHTML = '';
+      
+      const culturalOutfits = culturalOutfitsDatabase[gender] || culturalOutfitsDatabase.other;
+      
+      culturalOutfits.forEach(outfit => {
+        const div = document.createElement('div');
+        div.className = 'outfit-card';
+        div.innerHTML = `
+          <div class="outfit-image" style="background: linear-gradient(135deg, ${outfit.color1} 0%, ${outfit.color2} 100%);">
+            <i class="fas ${outfit.icon}"></i>
+          </div>
+          <div class="outfit-content">
+            <h3 class="outfit-title">${outfit.title}</h3>
+            <div class="outfit-meta">
+              <span><i class="fas fa-map-marker-alt"></i> ${outfit.region}</span>
+              <span><i class="fas fa-tag"></i> ${outfit.style}</span>
+              <span class="gender-badge ${gender}">${gender.charAt(0).toUpperCase() + gender.slice(1)}</span>
+            </div>
+            <p>${outfit.description}. Perfect for ${currentUser.gender === 'male' ? 'men' : currentUser.gender === 'female' ? 'women' : 'all'} in ${outfit.region}.</p>
+            <div class="outfit-actions">
+              <button class="btn btn-outline" onclick="viewCulturalDetails('${outfit.region}')">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+              <button class="btn btn-primary" onclick="generateSimilar('${outfit.region}')">
+                <i class="fas fa-robot"></i> Generate Similar
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function loadSavedOutfitsForGender() {
+      if (!currentUser) return;
+      
+      const gender = currentUser.gender;
+      const container = document.getElementById('savedOutfits');
+      container.innerHTML = '';
+      
+      const savedOutfits = savedOutfitsDatabase[gender] || savedOutfitsDatabase.other;
+      
+      savedOutfits.forEach(outfit => {
+        const colorMap = {
+          'Festive': '#ec4899',
+          'Office': '#6366f1',
+          'Casual': '#f59e0b'
+        };
+        
+        const color1 = colorMap[outfit.style] || '#3b82f6';
+        const color2 = adjustColor(color1, 20);
+        
+        const div = document.createElement('div');
+        div.className = 'outfit-card';
+        div.innerHTML = `
+          <div class="outfit-image" style="background: linear-gradient(135deg, ${color1} 0%, ${color2} 100%);">
+            <i class="fas ${outfit.icon}"></i>
+          </div>
+          <div class="outfit-content">
+            <h3 class="outfit-title">${outfit.title}</h3>
+            <div class="outfit-meta">
+              <span><i class="fas fa-calendar"></i> Saved: ${outfit.saved}</span>
+              <span><i class="fas fa-tag"></i> ${outfit.style}</span>
+              <span class="gender-badge ${gender}">${gender.charAt(0).toUpperCase() + gender.slice(1)}</span>
+            </div>
+            <p>AI-generated outfit saved for ${outfit.style.toLowerCase()} occasions.</p>
+            <div class="outfit-actions">
+              <button class="btn btn-outline" onclick="viewOutfitDetails('${outfit.title}')">
+                <i class="fas fa-eye"></i> Details
+              </button>
+              <button class="btn btn-outline" onclick="removeOutfit(this)">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Update saved outfits analysis
+      updateSavedOutfitsAnalysis(gender);
+    }
+
+    function updateSavedOutfitsAnalysis(gender) {
+      const savedOutfits = savedOutfitsDatabase[gender] || savedOutfitsDatabase.other;
+      
+      const stylePreferences = {
+        male: "60% Fusion, 25% Traditional, 15% Western",
+        female: "55% Traditional, 30% Fusion, 15% Western",
+        other: "50% Fusion, 30% Minimalist, 20% Traditional"
+      };
+      
+      const colorPalettes = {
+        male: "Earth tones (40%), Blues (30%), Neutrals (20%), Others (10%)",
+        female: "Jewel tones (35%), Pastels (30%), Neutrals (25%), Others (10%)",
+        other: "Neutrals (45%), Earth tones (30%), Brights (15%), Others (10%)"
+      };
+      
+      const comfortPriorities = {
+        male: "High - you prefer outfits with mobility and breathable fabrics",
+        female: "Medium-High - you balance style with comfort in most outfits",
+        other: "High - comfort is your top priority in outfit selection"
+      };
+      
+      const trendAdoptions = {
+        male: "You adopt trends slowly but incorporate them thoughtfully",
+        female: "You quickly adopt trends that work with your personal style",
+        other: "You focus on timeless pieces with occasional trend elements"
+      };
+      
+      const seasonalAdaptations = {
+        male: "Good awareness of seasonal appropriateness in your saved outfits",
+        female: "Excellent seasonal adaptation with appropriate fabrics and layers",
+        other: "You consider seasonal factors in most of your saved outfits"
+      };
+      
+      const recommendations = {
+        male: "A linen-blend kurta set for summer casual wear that would complement 8 existing items in your wardrobe",
+        female: "A statement jacket that can be dressed up or down, increasing outfit combinations by 35%",
+        other: "Versatile neutral pieces that can be mixed and matched across seasons"
+      };
+      
+      document.getElementById('savedStylePreference').textContent = stylePreferences[gender] || stylePreferences.other;
+      document.getElementById('savedColorPalette').textContent = colorPalettes[gender] || colorPalettes.other;
+      document.getElementById('savedComfortPriority').textContent = comfortPriorities[gender] || comfortPriorities.other;
+      document.getElementById('savedTrendAdoption').textContent = trendAdoptions[gender] || trendAdoptions.other;
+      document.getElementById('savedSeasonalAdaptation').textContent = seasonalAdaptations[gender] || seasonalAdaptations.other;
+      document.getElementById('savedRecommendation').textContent = recommendations[gender] || recommendations.other;
+    }
+
+    function adjustColor(color, amount) {
+      // Simple color adjustment function
+      return color.replace(/\d+/g, num => Math.min(255, parseInt(num) + amount));
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('stylesense_current_user');
+      
+      // Hide app, show auth
+      document.getElementById('appContainer').classList.remove('active');
+      document.getElementById('authContainer').style.display = 'flex';
+      
+      // Reset forms
+      document.querySelector('#loginForm input[type="email"]').value = '';
+      document.querySelector('#loginForm input[type="password"]').value = '';
+      document.querySelector('#signupForm input[type="text"]').value = '';
+      document.querySelector('#signupForm input[type="email"]').value = '';
+      document.querySelector('#signupForm input[type="password"]').value = '';
+      selectedGender = '';
+      document.querySelectorAll('.gender-option').forEach(option => option.classList.remove('active'));
+      
+      showNotification('You have been logged out successfully');
+    }
+
+    /* ---------------- NOTIFICATION SYSTEM ---------------- */
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.innerHTML = `
+        <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      if (type === 'error') {
+        notification.style.background = 'var(--error)';
+      } else if (type === 'warning') {
+        notification.style.background = 'var(--warning)';
+      }
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    /* ---------------- APP NAVIGATION ---------------- */
+    function navigate(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll(`a[href="#${pageId}"]`).forEach(l => l.classList.add('active'));
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ---------------- DARK MODE ---------------- */
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      themeToggle.innerHTML = isDark
+        ? `<i class="fas fa-sun"></i><span>Light Mode</span>`
+        : `<i class="fas fa-moon"></i><span>Dark Mode</span>`;
+      
+      localStorage.setItem('stylesense-theme', isDark ? 'dark' : 'light');
+    });
+
+    /* ---------------- CHIP SELECTION ---------------- */
+    document.querySelectorAll(".chips-container").forEach(group => {
+      group.addEventListener("click", e => {
+        if (!e.target.classList.contains("chip")) return;
+        group.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        e.target.classList.add("active");
+      });
+    });
+
+    /* ---------------- GENERATE OUTFIT ---------------- */
+    function generateOutfit() {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      document.getElementById("generateLoading").style.display = "flex";
+      document.getElementById("outfitResult").style.display = "none";
+
+      setTimeout(() => {
+        document.getElementById("generateLoading").style.display = "none";
+        document.getElementById("outfitResult").style.display = "block";
+        document.getElementById("outfitResult").scrollIntoView({ behavior: 'smooth' });
+        
+        // Reload outfits for current gender
+        loadOutfitsForGender();
+      }, 1800);
+    }
+
+    function regenerateOutfit() {
+      generateOutfit();
+    }
+
+    function saveOutfit() {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification('Outfit saved to your collection!');
+    }
+
+    function shareOutfit() {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification('Share feature coming soon!');
+    }
+
+    /* ---------------- EVALUATE OUTFIT ---------------- */
+    function evaluateOutfit() {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      document.getElementById("evaluateLoading").style.display = "flex";
+      document.getElementById("evaluationResult").style.display = "none";
+
+      setTimeout(() => {
+        document.getElementById("evaluateLoading").style.display = "none";
+        document.getElementById("evaluationResult").style.display = "block";
+        document.getElementById("evaluationResult").scrollIntoView({ behavior: 'smooth' });
+      }, 1600);
+    }
+
+    /* ---------------- WARDROBE ---------------- */
+    function uploadClothing() {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification(`📸 Uploading ${currentUser.gender} clothing item...`);
+    }
+
+    function viewItemDetails(item) {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification(`👕 Viewing details for ${item} (${currentUser.gender} fit)`);
+    }
+
+    /* ---------------- CULTURAL ---------------- */
+    function viewCulturalDetails(region) {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification(`🌍 Cultural styling for ${currentUser.gender} in ${region}`);
+    }
+
+    function generateSimilar(region) {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      navigate("generate");
+      showNotification(`🤖 Generating ${currentUser.gender} outfit inspired by ${region}`);
+    }
+
+    /* ---------------- SAVED ---------------- */
+    function viewOutfitDetails(name) {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      showNotification(`👗 Viewing ${currentUser.gender} outfit: ${name}`);
+    }
+
+    function removeOutfit(btn) {
+      if (!currentUser) {
+        showNotification('Please login first', 'error');
+        return;
+      }
+      
+      if (confirm("Are you sure you want to remove this outfit from your saved collection?")) {
+        btn.closest(".outfit-card").remove();
+        showNotification('Outfit removed from saved collection');
+      }
+    }
+
+    /* ---------------- INITIALIZATION ---------------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check for saved theme
+      const savedTheme = localStorage.getItem('stylesense-theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeToggle) {
+          themeToggle.innerHTML = `<i class="fas fa-sun"></i><span>Light Mode</span>`;
+        }
+      }
+      
+      // Check if user is already logged in
+      const savedUser = localStorage.getItem('stylesense_current_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showApp();
+      }
+      
+      // Initialize chips
+      document.querySelectorAll(".chips-container").forEach(group => {
+        group.querySelectorAll(".chip").forEach((chip, index) => {
+          if (index === 0) chip.classList.add("active");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
